@@ -80,12 +80,12 @@ class Config(dict):
         "DB_HOST": "127.0.0.1",
         "DB_PORT": 5432,
         "DB_USER": "root",
-        "DB_PASSWORD": "Password123@postgres",
+        "DB_PASSWORD": "root",
         "DB_ENGINE": "dj_db_conn_pool.backends.postgresql",
         "DB_MAX_OVERFLOW": 80,
         'LANGUAGE_CODE': 'zh-CN',
         # 向量模型
-        "EMBEDDING_MODEL_NAME": "shibing624/text2vec-base-chinese",
+        "EMBEDDING_MODEL_NAME": "shibing624_text2vec-base-chinese",
         "EMBEDDING_DEVICE": "cpu",
         "EMBEDDING_MODEL_PATH": os.path.join(PROJECT_DIR, 'models'),
         # 向量库配置

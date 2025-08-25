@@ -18,7 +18,7 @@ from setting.models_provider.impl.local_model_provider.model.reranker import Loc
 from smartdoc.conf import PROJECT_DIR
 from django.utils.translation import gettext as _
 
-embedding_text2vec_base_chinese = ModelInfo('shibing624/text2vec-base-chinese', '', ModelTypeConst.EMBEDDING,
+embedding_text2vec_base_chinese = ModelInfo('shibing624_text2vec-base-chinese', '', ModelTypeConst.EMBEDDING,
                                             LocalEmbeddingCredential(), LocalEmbedding)
 bge_reranker_v2_m3 = ModelInfo('BAAI/bge-reranker-v2-m3', '', ModelTypeConst.RERANKER,
                                LocalRerankerCredential(), LocalReranker)
