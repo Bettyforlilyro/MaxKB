@@ -1287,15 +1287,16 @@ def save_image(image_list):
 
 
 def file_to_paragraph(file, pattern_list: List, with_filter: bool, limit: int):
-    get_buffer = FileBufferHandle().get_buffer
-    for split_handle in split_handles:
-        if split_handle.support(file, get_buffer):
-            result = split_handle.handle(file, pattern_list, with_filter, limit, get_buffer, save_image)
-            if isinstance(result, list):
+    get_buffer = FileBufferHandle().get_buffer  # 获取文件缓冲区以支持多次读取操作
+    for split_handle in split_handles:  # 遍历所有分段器
+        if split_handle.support(file, get_buffer):  # 检查分段器是否支持当前文件类型
+            result = split_handle.handle(file, pattern_list, with_filter, limit, get_buffer, save_image)  # 调用分段器处理文件
+            if isinstance(result, list):  # 如果返回的是段落列表，则直接返回
                 return result
-            return [result]
+            return [result]  # 如果返回的是单个段落对象，则将其包装为列表后返回
+    # 如果没有匹配的分段器，使用默认分段器处理文件（其实就是默认的TextSplitHandle）
     result = default_split_handle.handle(file, pattern_list, with_filter, limit, get_buffer, save_image)
-    if isinstance(result, list):
+    if isinstance(result, list):  # 同样检查返回值类型并适配
         return result
     return [result]
 

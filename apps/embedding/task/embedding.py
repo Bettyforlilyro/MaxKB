@@ -44,20 +44,26 @@ def get_embedding_model(model_id, exception_handler=lambda e: max_kb_error.error
 
 @celery_app.task(base=QueueOnce, once={'keys': ['paragraph_id']}, name='celery:embedding_by_paragraph')
 def embedding_by_paragraph(paragraph_id, model_id):
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph   is called.............')
     embedding_model = get_embedding_model(model_id)
     ListenerManagement.embedding_by_paragraph(paragraph_id, embedding_model)
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['paragraph_id_list']}, name='celery:embedding_by_paragraph_data_list')
 def embedding_by_paragraph_data_list(data_list, paragraph_id_list, model_id):
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph_data_list   is called.............')
     embedding_model = get_embedding_model(model_id)
     ListenerManagement.embedding_by_paragraph_data_list(data_list, paragraph_id_list, embedding_model)
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph_data_list   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['paragraph_id_list']}, name='celery:embedding_by_paragraph_list')
 def embedding_by_paragraph_list(paragraph_id_list, model_id):
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph_list   is called.............')
     embedding_model = get_embedding_model(model_id)
     ListenerManagement.embedding_by_paragraph_list(paragraph_id_list, embedding_model)
+    max_kb.info('embedding.task.embedding.embedding_by_paragraph_list   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['document_id']}, name='celery:embedding_by_document')
@@ -70,6 +76,7 @@ def embedding_by_document(document_id, model_id, state_list=None):
     :return: None
     """
 
+    max_kb.info('embedding.task.embedding.embedding_by_document   is called.............')
     if state_list is None:
         state_list = [State.PENDING.value, State.STARTED.value, State.SUCCESS.value, State.FAILURE.value,
                       State.REVOKE.value,
@@ -86,6 +93,7 @@ def embedding_by_document(document_id, model_id, state_list=None):
 
     embedding_model = get_embedding_model(model_id, exception_handler)
     ListenerManagement.embedding_by_document(document_id, embedding_model, state_list)
+    max_kb.info('embedding.task.embedding.embedding_by_document   is called..........end')
 
 
 @celery_app.task(name='celery:embedding_by_document_list')
@@ -96,8 +104,10 @@ def embedding_by_document_list(document_id_list, model_id):
     @param model_id 向量模型
     :return: None
     """
+    max_kb.info('embedding.task.embedding.embedding_by_document_list   is called.............')
     for document_id in document_id_list:
         embedding_by_document.delay(document_id, model_id)
+    max_kb.info('embedding.task.embedding.embedding_by_document_list   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['dataset_id']}, name='celery:embedding_by_dataset')
@@ -108,6 +118,7 @@ def embedding_by_dataset(dataset_id, model_id):
           @param model_id 向量模型
           :return: None
           """
+    max_kb.info('embedding.task.embedding.embedding_by_dataset   is called.............')
     max_kb.info(_('Start--->Vectorized dataset: {dataset_id}').format(dataset_id=dataset_id))
     try:
         ListenerManagement.delete_embedding_by_dataset(dataset_id)
@@ -127,6 +138,7 @@ def embedding_by_dataset(dataset_id, model_id):
                                                                                   traceback=traceback.format_exc())))
     finally:
         max_kb.info(_('End--->Vectorized dataset: {dataset_id}').format(dataset_id=dataset_id))
+    max_kb.info('embedding.task.embedding.embedding_by_dataset   is called..........end')
 
 
 def embedding_by_problem(args, model_id):

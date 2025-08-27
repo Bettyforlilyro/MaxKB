@@ -67,17 +67,20 @@ def get_is_the_task_interrupted(document_id):
 @celery_app.task(base=QueueOnce, once={'keys': ['dataset_id']},
                  name='celery:generate_related_by_dataset')
 def generate_related_by_dataset_id(dataset_id, model_id, prompt, state_list=None):
+    max_kb.info('dataset.task.generate.generate_related_by_dataset_id   is called.............')
     document_list = QuerySet(Document).filter(dataset_id=dataset_id)
     for document in document_list:
         try:
             generate_related_by_document_id.delay(document.id, model_id, prompt, state_list)
         except Exception as e:
             pass
+    max_kb.info('dataset.task.generate.generate_related_by_dataset_id   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['document_id']},
                  name='celery:generate_related_by_document')
 def generate_related_by_document_id(document_id, model_id, prompt, state_list=None):
+    max_kb.info('dataset.task.generate.generate_related_by_document_id   is called.............')
     if state_list is None:
         state_list = [State.PENDING.value, State.STARTED.value, State.SUCCESS.value, State.FAILURE.value,
                       State.REVOKE.value,
@@ -108,11 +111,13 @@ def generate_related_by_document_id(document_id, model_id, prompt, state_list=No
     finally:
         ListenerManagement.post_update_document_status(document_id, TaskType.GENERATE_PROBLEM)
         max_kb.info(_('End--->Generate problem: {document_id}').format(document_id=document_id))
+        max_kb.info('dataset.task.generate.generate_related_by_document_id   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['paragraph_id_list']},
                  name='celery:generate_related_by_paragraph_list')
 def generate_related_by_paragraph_id_list(document_id, paragraph_id_list, model_id, prompt):
+    max_kb.info('dataset.task.generate.generate_related_by_paragraph_id_list   is called.............')
     try:
         is_the_task_interrupted = get_is_the_task_interrupted(document_id)
         if is_the_task_interrupted():
@@ -137,3 +142,5 @@ def generate_related_by_paragraph_id_list(document_id, paragraph_id_list, model_
         page(QuerySet(Paragraph).filter(id__in=paragraph_id_list), 10, generate_problem, is_the_task_interrupted)
     finally:
         ListenerManagement.post_update_document_status(document_id, TaskType.GENERATE_PROBLEM)
+        max_kb.info('dataset.task.generate.generate_related_by_paragraph_id_list   is called.............')
+

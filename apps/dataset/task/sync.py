@@ -25,6 +25,7 @@ max_kb = logging.getLogger("max_kb")
 
 @celery_app.task(base=QueueOnce, once={'keys': ['dataset_id']}, name='celery:sync_web_dataset')
 def sync_web_dataset(dataset_id: str, url: str, selector: str):
+    max_kb.info('dataset.task.sync.sync_web_dataset   is called.............')
     try:
         max_kb.info(_('Start--->Start synchronization web knowledge base:{dataset_id}').format(dataset_id=dataset_id))
         ForkManage(url, selector.split(" ") if selector is not None else []).fork(2, set(),
@@ -35,10 +36,13 @@ def sync_web_dataset(dataset_id: str, url: str, selector: str):
     except Exception as e:
         max_kb_error.error(_('Synchronize web knowledge base:{dataset_id} error{error}{traceback}').format(
             dataset_id=dataset_id, error=str(e), traceback=traceback.format_exc()))
+    finally:
+        max_kb.info('dataset.task.sync.sync_web_dataset   is called..........end')
 
 
 @celery_app.task(base=QueueOnce, once={'keys': ['dataset_id']}, name='celery:sync_replace_web_dataset')
 def sync_replace_web_dataset(dataset_id: str, url: str, selector: str):
+    max_kb.info('dataset.task.sync.sync_replace_web_dataset   is called.............')
     try:
         max_kb.info(_('Start--->Start synchronization web knowledge base:{dataset_id}').format(dataset_id=dataset_id))
         ForkManage(url, selector.split(" ") if selector is not None else []).fork(2, set(),
@@ -48,10 +52,13 @@ def sync_replace_web_dataset(dataset_id: str, url: str, selector: str):
     except Exception as e:
         max_kb_error.error(_('Synchronize web knowledge base:{dataset_id} error{error}{traceback}').format(
             dataset_id=dataset_id, error=str(e), traceback=traceback.format_exc()))
+    finally:
+        max_kb.info('dataset.task.sync.sync_replace_web_dataset   is called..........end')
 
 
 @celery_app.task(name='celery:sync_web_document')
 def sync_web_document(dataset_id, source_url_list: List[str], selector: str):
+    max_kb.info('dataset.task.sync.sync_web_document   is called.............')
     handler = get_sync_web_document_handler(dataset_id)
     for source_url in source_url_list:
         try:
@@ -59,3 +66,4 @@ def sync_web_document(dataset_id, source_url_list: List[str], selector: str):
             handler(source_url, selector, result)
         except Exception as e:
             pass
+    max_kb.info('dataset.task.sync.sync_web_document   is called..........end')

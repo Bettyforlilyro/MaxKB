@@ -516,8 +516,11 @@ class Document(APIView):
                              manual_parameters=DocumentSerializers.Split.get_request_params_api(),
                              tags=[_('Knowledge Base/Documentation')])
         def post(self, request: Request):
+            # 从请求中获取生成的文件列表，并将文件列表添加到split_data中
             split_data = {'file': request.FILES.getlist('file')}
+            # 文件的相关数据
             request_data = request.data
+            # 高级分段相关，包括分段标识/分段长度限制/是否启用自动清洗。默认使用智能分段，不包括这些字段使用默认值
             if 'patterns' in request.data and request.data.get('patterns') is not None and len(
                     request.data.get('patterns')) > 0:
                 split_data.__setitem__('patterns', request_data.getlist('patterns'))
@@ -525,9 +528,12 @@ class Document(APIView):
                 split_data.__setitem__('limit', request_data.get('limit'))
             if 'with_filter' in request.data:
                 split_data.__setitem__('with_filter', request_data.get('with_filter'))
+            # 传入参数处理完毕的split_data数据，并创建序列化器实例
             ds = DocumentSerializers.Split(
                 data=split_data)
+            # 对传入的数据进行验证，如果验证失败则抛出异常
             ds.is_valid(raise_exception=True)
+            # 调用序列化器的parse方法，对文档进行分段处理（生成预览的分段效果），返回成功结果
             return result.success(ds.parse())
 
     class Page(APIView):
