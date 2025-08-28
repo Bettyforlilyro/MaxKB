@@ -19,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 
 def get_embedding_model(model_id):
     model = QuerySet(Model).filter(id=model_id).first()
-    # 手动关闭数据库连接
+    # 手动关闭数据库连接，为了防止后续长时间运行的任务占用数据库连接池
     connection.close()
     embedding_model = ModelManage.get_model(model_id,
                                             lambda _id: get_model(model, use_local=True))
