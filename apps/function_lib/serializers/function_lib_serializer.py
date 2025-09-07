@@ -242,7 +242,7 @@ class FunctionLibSerializer(serializers.Serializer):
 
         @staticmethod
         def convert_value(name: str, value: str, _type: str, is_required: bool):
-            if not is_required and value is None:
+            if not is_required and (value is None or (isinstance(value, str) and value.strip() == '')):
                 return None
             try:
                 if _type == 'int':
